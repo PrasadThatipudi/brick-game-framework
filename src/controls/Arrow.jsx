@@ -1,3 +1,3 @@
-const Arrow = ({ type, text }) => <button>{text}</button>;
+const Arrow = ({ text, onClick }) => <button onClick={onClick}>{text}</button>;
 
 export default Arrow;

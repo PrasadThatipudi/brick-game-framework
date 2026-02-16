@@ -2,14 +2,19 @@ import { useState } from "react";
 import Screen from "./screen/Screen";
 import GameControls from "./controls/GameControls";
 
-const BrickGame = () => {
-  const zeros = Array(10).fill(0);
-  const [screen, setScreen] = useState(Array.from({ length: 10 }, () => zeros));
+const BrickGame = ({ arrows, initialScreen }) => {
+  const [screen, setScreen] = useState(initialScreen);
+  const arrowControls = {
+    up: () => setScreen(arrows.up()),
+    right: () => setScreen(arrows.right()),
+    down: () => setScreen(arrows.down()),
+    left: () => setScreen(arrows.left()),
+  };
 
   return (
     <div>
       <Screen screen={screen} />
-      <GameControls />
+      <GameControls arrowControls={arrowControls} />
     </div>
   );
 };

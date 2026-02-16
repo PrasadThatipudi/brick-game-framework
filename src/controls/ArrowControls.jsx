@@ -1,6 +1,6 @@
 import Arrow from "./Arrow";
 
-const ArrowControls = () => {
+const ArrowControls = ({ arrowControls: { up, down, left, right } }) => {
   return (
     <div
       style={{
@@ -9,10 +9,10 @@ const ArrowControls = () => {
         justifyContent: "space-around",
       }}
     >
-      <Arrow text={"⬆️"} />
-      <Arrow text={"➡️"} />
-      <Arrow text={"⬇️"} />
-      <Arrow text={"⬅️"} />
+      <Arrow text={"⬆️"} onClick={up} />
+      <Arrow text={"➡️"} onClick={right} />
+      <Arrow text={"⬇️"} onClick={down} />
+      <Arrow text={"⬅️"} onClick={left} />
     </div>
   );
 };
