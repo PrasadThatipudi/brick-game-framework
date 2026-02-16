@@ -1,6 +1,6 @@
 import { useState } from "react";
-import Screen from "./Screen";
-import GameControls from "./GameControls";
+import Screen from "./screen/Screen";
+import GameControls from "./controls/GameControls";
 
 const BrickGame = () => {
   const zeros = Array(10).fill(0);
