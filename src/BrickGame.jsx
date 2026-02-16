@@ -1,6 +1,6 @@
 import { useState } from "react";
-import Screen from "./screen/Screen";
-import GameControls from "./controls/GameControls";
+import Screen from "./components/screen/Screen";
+import GameControls from "./components/controls/GameControls";
 
 const BrickGame = ({ arrows, initialScreen }) => {
   const [screen, setScreen] = useState(initialScreen);

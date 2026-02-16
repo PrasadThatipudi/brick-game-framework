@@ -1,19 +1,16 @@
 import BrickGame from "./BrickGame";
+import ScreenManager from "./screen-modules/screen-manager";
 
 function App() {
-  const zeros = Array(10).fill(0);
-  const initialScreen = Array.from({ length: 10 }, () => zeros);
-  const arrows = {
-    up: () => initialScreen,
-    down: () => initialScreen,
-    left: () => initialScreen,
-    right: () => initialScreen,
-  };
+  const screen = ScreenManager.initialize(10, 10);
 
   return (
     <div>
       <h1>Brick Game Framework</h1>
-      <BrickGame initialScreen={initialScreen} arrows={arrows} />
+      <BrickGame
+        initialScreen={screen.getScreen()}
+        arrows={screen.getArrows()}
+      />
     </div>
   );
 }
