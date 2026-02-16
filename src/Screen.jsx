@@ -1,8 +1,10 @@
 import PixelRow from "./PixelRow";
 
-const Screen = ({ width, height }) => {
-  const rows = Array.from({ length: height }, (_, index) => {
-    return <PixelRow length={width} key={index} />;
+const Screen = ({ screen }) => {
+  const height = screen.length;
+
+  const rows = Array.from({ length: height }, (_, rowIndex) => {
+    return <PixelRow row={screen[rowIndex]} key={rowIndex} />;
   });
 
   return (

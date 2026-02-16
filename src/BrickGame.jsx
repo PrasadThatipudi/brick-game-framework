@@ -1,7 +1,11 @@
+import { useState } from "react";
 import Screen from "./Screen";
 
-const BrickGame = (props) => {
-  return <Screen width={10} height={10} />;
+const BrickGame = () => {
+  const zeros = Array(10).fill(0);
+  const [screen, setScreen] = useState(Array.from({ length: 10 }, () => zeros));
+
+  return <Screen screen={screen} />;
 };
 
 export default BrickGame;

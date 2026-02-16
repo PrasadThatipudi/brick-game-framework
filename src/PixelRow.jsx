@@ -1,9 +1,14 @@
 import PixelBox from "./PixelBox";
 
-const PixelRow = ({ length }) => {
-  const row = Array.from({ length }, (_, index) => <PixelBox key={index} />);
+const PixelRow = ({ row }) => {
+  const pixelRow = Array.from({ length: row.length }, (_, index) => (
+    <PixelBox
+      key={index}
+      backgroundColor={row[index] ? "black" : "whitesmoke"}
+    />
+  ));
 
-  return <tr>{row}</tr>;
+  return <tr>{pixelRow}</tr>;
 };
 
 export default PixelRow;
