@@ -1,8 +1,8 @@
 import BrickGame from "./BrickGame";
-import ScreenManager from "./screen-modules/screen-manager";
+import GameMaker from "./brick-game-modules/game-maker";
 
 function App() {
-  const screen = ScreenManager.initialize(10, 10);
+  const screen = GameMaker.initialize(10, 10);
 
   return (
     <div>
