@@ -1,6 +1,18 @@
 import Arrow from "./Arrow";
 
 const ArrowControls = ({ arrowControls: { up, down, left, right } }) => {
+  const extractArrowKey = (keyName) => keyName.split("Arrow")[1].toLowerCase();
+
+  document.onkeydown = (event) => {
+    const actions = {
+      up,
+      down,
+      left,
+      right,
+    };
+
+    actions[extractArrowKey(event.key)]();
+  };
   return (
     <div
       style={{
