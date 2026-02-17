@@ -1,8 +1,11 @@
 import BrickGame from "./BrickGame";
 import GameMaker from "./brick-game-modules/game-maker";
+import Shape from "./brick-game-modules/shape";
 
 function App() {
   const screen = GameMaker.initialize(10, 10);
+  const cube = Shape.rectangle(5, 5);
+  screen.addShapeToScreen(cube, { top: 0, left: 0 });
 
   return (
     <div>

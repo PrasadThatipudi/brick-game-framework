@@ -27,12 +27,33 @@ class ScreenManager {
     return new ScreenManager(initialScreen);
   }
 
+  private setScreen(newScreen: Screen) {
+    this.currentScreen = newScreen;
+  }
+
   getScreen() {
     return this.currentScreen;
   }
 
   getArrows() {
     return this.arrows;
+  }
+
+  addShapeToScreen(shape: Shape, position: { top: number; left: number }) {
+    const { top, left } = position;
+    const { height, width, shape: shapeMatrix } = shape.getShape();
+
+    const copyScreen = [...this.currentScreen];
+
+    for (let index = 0; index < height; index++) {
+      copyScreen[index + top] = copyScreen[index + top].toSpliced(
+        left,
+        width,
+        ...shapeMatrix[index],
+      );
+    }
+
+    this.setScreen(copyScreen);
   }
 }
 
