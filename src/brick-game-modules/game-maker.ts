@@ -1,28 +1,15 @@
 import Shape from "./shape";
-import {
-  Direction,
-  DirectionHandler,
-  DirectionHandlers,
-  Screen,
-  ScreenRow,
-  ShapeWithPosition,
-} from "./types";
+import { DirectionHandlers, Screen, ScreenRow } from "./types";
 
 const uniqueId = (start: number) => () => start++;
 
 class GameMaker {
-  private currentScreen: Screen;
+  private initialScreen: Screen;
   private shapes: { [N in number]: Shape } = {};
-  private arrows: DirectionHandlers = {
-    up: null,
-    down: null,
-    left: null,
-    right: null,
-  };
   private uniqueShapeId = uniqueId(0);
 
   private constructor(initialScreen: Screen) {
-    this.currentScreen = initialScreen;
+    this.initialScreen = initialScreen;
   }
 
   static initialize(width: number, height: number) {
@@ -35,16 +22,31 @@ class GameMaker {
   }
 
   private setScreen(newScreen: Screen) {
-    this.currentScreen = newScreen;
+    this.initialScreen = newScreen;
   }
 
-  getScreen() {
-    this.render();
-    return this.currentScreen;
-  }
+  getArrows(): DirectionHandlers {
+    const shape = this.shapes[0];
+    const directionHandlers: DirectionHandlers = {
+      up: null,
+      down: null,
+      left: null,
+      right: null,
+    };
 
-  getArrows() {
-    return this.arrows;
+    return Object.entries(shape.getArrows()).reduce(
+      (directionHandlers, [direction, handler]): DirectionHandlers => {
+        if (handler === null) return directionHandlers;
+
+        const newHandler = () => {
+          handler();
+          return this.render();
+        };
+
+        return { ...directionHandlers, [direction]: newHandler };
+      },
+      directionHandlers,
+    );
   }
 
   private static updateScreenRow(
@@ -79,20 +81,9 @@ class GameMaker {
   }
 
   render() {
-    for (const shape of Object.values(this.shapes)) {
-      const newScreen = GameMaker.insertShapeInScreen(
-        shape,
-        this.currentScreen,
-      );
-
-      this.setScreen(newScreen);
-    }
-  }
-
-  setArrows(arrows: DirectionHandlers) {
-    Object.entries(
-      ([direction, handler]: [Direction, DirectionHandler]) =>
-        (this.arrows[direction] = arrows[direction] || handler),
+    return Object.values(this.shapes).reduce(
+      (newScreen, shape) => GameMaker.insertShapeInScreen(shape, newScreen),
+      this.initialScreen,
     );
   }
 

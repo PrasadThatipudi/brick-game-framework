@@ -13,15 +13,17 @@ function App() {
     { top: 4, left: 0 },
   );
 
+  plus.onArrowDown(({ top, left }) => ({ top: top + 1, left }));
+  plus.onArrowUp(({ top, left }) => ({ top: top - 1, left }));
+  plus.onArrowLeft(({ top, left }) => ({ top, left: left - 1 }));
+  plus.onArrowRight(({ top, left }) => ({ top, left: left + 1 }));
+
   screen.addShapeToScreen(plus);
 
   return (
     <div>
       <h1>Brick Game Framework</h1>
-      <BrickGame
-        initialScreen={screen.getScreen()}
-        arrows={screen.getArrows()}
-      />
+      <BrickGame initialScreen={screen.render()} arrows={screen.getArrows()} />
     </div>
   );
 }

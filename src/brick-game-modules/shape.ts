@@ -1,8 +1,14 @@
-import { DirectionHandlers, Position, Screen } from "./types";
+import {
+  Position,
+  PositionUpdater,
+  Screen,
+  ShapeDirectionHandlers,
+  ShapeUpdaterWithPosition,
+} from "./types";
 class Shape {
   private shape: Screen;
   private position: Position;
-  private arrows: DirectionHandlers = {
+  private arrows: ShapeDirectionHandlers = {
     up: null,
     down: null,
     left: null,
@@ -14,8 +20,34 @@ class Shape {
     this.position = position;
   }
 
-  setPosition(position: Position) {
+  private setPosition(position: Position) {
     this.position = position;
+  }
+
+  private createDirectionHandler(
+    handler: (position: Position) => Position,
+    shape: Shape,
+  ): ShapeUpdaterWithPosition {
+    return () => {
+      this.setPosition(handler(shape.position));
+      return shape;
+    };
+  }
+
+  onArrowDown(handler: PositionUpdater) {
+    this.arrows.down = this.createDirectionHandler(handler, this);
+  }
+
+  onArrowUp(handler: PositionUpdater) {
+    this.arrows.up = this.createDirectionHandler(handler, this);
+  }
+
+  onArrowLeft(handler: PositionUpdater) {
+    this.arrows.left = this.createDirectionHandler(handler, this);
+  }
+
+  onArrowRight(handler: PositionUpdater) {
+    this.arrows.right = this.createDirectionHandler(handler, this);
   }
 
   getShape() {
@@ -25,6 +57,10 @@ class Shape {
       width: this.shape[0].length,
       position: this.position,
     };
+  }
+
+  getArrows() {
+    return this.arrows;
   }
 
   static rectangle(height: number, width: number, position: Position): Shape {

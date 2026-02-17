@@ -10,6 +10,13 @@ type DirectionHandlers = {
   [D in Direction]: DirectionHandler | null;
 };
 
+type PositionUpdater = (position: Position) => Position;
+type ShapeUpdaterWithPosition = () => Shape;
+
+type ShapeDirectionHandlers = {
+  [D in Direction]: ShapeUpdaterWithPosition | null;
+};
+
 type ShapeWithPosition = {
   shape: Shape;
   position: Position;
@@ -23,4 +30,7 @@ export type {
   Direction,
   DirectionHandler,
   ShapeWithPosition,
+  PositionUpdater,
+  ShapeUpdaterWithPosition,
+  ShapeDirectionHandlers,
 };
