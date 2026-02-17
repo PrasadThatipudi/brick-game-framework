@@ -1,25 +1,25 @@
 import Shape from "./shape";
-import { Position, Screen, ScreenRow } from "./types";
+import {
+  Direction,
+  DirectionHandler,
+  DirectionHandlers,
+  Screen,
+  ScreenRow,
+  ShapeWithPosition,
+} from "./types";
 
-type ShapeWithPosition = {
-  shape: Shape;
-  position: Position;
-};
+const uniqueId = (start: number) => () => start++;
 
 class GameMaker {
   private currentScreen: Screen;
-  private shapes: ShapeWithPosition[] = [];
-  private arrows: {
-    up: (() => Screen) | null;
-    down: (() => Screen) | null;
-    left: (() => Screen) | null;
-    right: (() => Screen) | null;
-  } = {
+  private shapes: { [N in number]: ShapeWithPosition } = {};
+  private arrows: DirectionHandlers = {
     up: null,
     down: null,
     left: null,
     right: null,
   };
+  private uniqueShapeId = uniqueId(0);
 
   private constructor(initialScreen: Screen) {
     this.currentScreen = initialScreen;
@@ -39,6 +39,7 @@ class GameMaker {
   }
 
   getScreen() {
+    this.render();
     return this.currentScreen;
   }
 
@@ -81,10 +82,10 @@ class GameMaker {
     );
   }
 
-  private updateScreenWithShapes() {
-    for (const shape of this.shapes) {
+  render() {
+    for (const shapeWithPosition of Object.values(this.shapes)) {
       const newScreen = GameMaker.insertShapeInScreen(
-        shape,
+        shapeWithPosition,
         this.currentScreen,
       );
 
@@ -92,9 +93,32 @@ class GameMaker {
     }
   }
 
-  addShapeToScreen(shape: Shape, position: { top: number; left: number }) {
-    this.shapes.push({ shape, position });
-    this.updateScreenWithShapes();
+  setArrows(arrows: DirectionHandlers) {
+    Object.entries(
+      ([direction, handler]: [Direction, DirectionHandler]) =>
+        (this.arrows[direction] = arrows[direction] || handler),
+    );
+  }
+
+  makeDirectionHandlers(arrows: DirectionHandlers): DirectionHandlers {
+    const updatedArrows = Object.entries(arrows).map(([direction, handler]) => {
+      if (handler === null) return [direction, handler];
+
+      const controlledHandler = () => handler();
+
+      return [direction, controlledHandler];
+    });
+
+    return Object.fromEntries(updatedArrows);
+  }
+
+  addShapeToScreen(
+    shape: Shape,
+    position: { top: number; left: number },
+    arrows: DirectionHandlers,
+  ) {
+    this.shapes[this.uniqueShapeId()] = { shape, position };
+    this.setArrows(this.makeDirectionHandlers(arrows));
   }
 }
 

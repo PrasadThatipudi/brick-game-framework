@@ -4,7 +4,6 @@ import Shape from "./brick-game-modules/shape";
 
 function App() {
   const screen = GameMaker.initialize(10, 10);
-  const cube = Shape.rectangle(5, 5);
   const plus = Shape.customShape([
     [0, 1, 0],
     [1, 1, 1],
@@ -15,7 +14,6 @@ function App() {
     down: ({ top, left }, _shape) => ({ top: top + 1, left }),
   };
 
-  screen.addShapeToScreen(cube, { top: 6, left: 0 }, arrowControls);
   screen.addShapeToScreen(plus, { top: 1, left: 0 }, arrowControls);
 
   return (
