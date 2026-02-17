@@ -46,16 +46,16 @@ class GameMaker {
     );
   }
 
-  private static spliceWithMapping<T>(
+  private static spliceMapping<T>(
     start: number,
     deleteCount: number,
-    array: T[],
+    items: T[],
     mapper: (value: T, index: number) => T,
   ) {
-    return array.toSpliced(
+    return items.toSpliced(
       start,
       deleteCount,
-      ...array.slice(start, start + deleteCount).map(mapper),
+      ...items.slice(start, start + deleteCount).map(mapper),
     );
   }
 
@@ -67,16 +67,12 @@ class GameMaker {
   ): ScreenRow {
     const start = left < 0 ? 0 : left;
     const deleteCount = left < 0 ? left + shapeWidth : shapeWidth;
+    const slicedShapeRow = shapeRow.slice(start - left);
 
     const insertPixel = (value: 0 | 1, index: number) =>
-      shapeRow[left < 0 ? Math.abs(left) + index : index] && value;
+      slicedShapeRow[index] && value;
 
-    return GameMaker.spliceWithMapping(
-      start,
-      deleteCount,
-      screenRow,
-      insertPixel,
-    );
+    return GameMaker.spliceMapping(start, deleteCount, screenRow, insertPixel);
   }
 
   private static insertShapeInScreen(shape: Shape, screen: Screen): Screen {
@@ -85,15 +81,14 @@ class GameMaker {
 
     const cloneScreen = screen.map((row) => row.slice());
 
-    const start = top < 0 ? 0 : top;
+    const start = (Math.abs(top) + top) / 2;
     const deleteCount = top < 0 ? top + height : height;
-    const absIndex = (index: number) =>
-      top < 0 ? index + Math.abs(top) : index;
+    const slicedShapeMatrix = shapeMatrix.slice(start - top);
 
     const insertShapeRow = (row: (0 | 1)[], index: number): ScreenRow =>
-      GameMaker.updateScreenRow(row, shapeMatrix[absIndex(index)], left, width);
+      GameMaker.updateScreenRow(row, slicedShapeMatrix[index], left, width);
 
-    return GameMaker.spliceWithMapping(
+    return GameMaker.spliceMapping(
       start,
       deleteCount,
       cloneScreen,
