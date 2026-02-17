@@ -4,17 +4,16 @@ import Shape from "./brick-game-modules/shape";
 
 function App() {
   const screen = GameMaker.initialize(10, 10);
-  const plus = Shape.customShape([
-    [0, 1, 0],
-    [1, 1, 1],
-    [0, 1, 0],
-  ]);
+  const plus = Shape.customShape(
+    [
+      [0, 1, 0],
+      [1, 1, 1],
+      [0, 1, 0],
+    ],
+    { top: 4, left: 0 },
+  );
 
-  const arrowControls = {
-    down: ({ top, left }, _shape) => ({ top: top + 1, left }),
-  };
-
-  screen.addShapeToScreen(plus, { top: 1, left: 0 }, arrowControls);
+  screen.addShapeToScreen(plus);
 
   return (
     <div>

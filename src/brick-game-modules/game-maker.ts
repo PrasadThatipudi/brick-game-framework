@@ -12,7 +12,7 @@ const uniqueId = (start: number) => () => start++;
 
 class GameMaker {
   private currentScreen: Screen;
-  private shapes: { [N in number]: ShapeWithPosition } = {};
+  private shapes: { [N in number]: Shape } = {};
   private arrows: DirectionHandlers = {
     up: null,
     down: null,
@@ -61,13 +61,9 @@ class GameMaker {
     );
   }
 
-  private static insertShapeInScreen(
-    shapeWithPosition: ShapeWithPosition,
-    screen: Screen,
-  ): Screen {
-    const { shape, position } = shapeWithPosition;
+  private static insertShapeInScreen(shape: Shape, screen: Screen): Screen {
+    const { height, shape: shapeMatrix, position } = shape.getShape();
     const { top, left } = position;
-    const { height, shape: shapeMatrix } = shape.getShape();
 
     const cloneScreen = screen.map((row) => row.slice());
 
@@ -83,9 +79,9 @@ class GameMaker {
   }
 
   render() {
-    for (const shapeWithPosition of Object.values(this.shapes)) {
+    for (const shape of Object.values(this.shapes)) {
       const newScreen = GameMaker.insertShapeInScreen(
-        shapeWithPosition,
+        shape,
         this.currentScreen,
       );
 
@@ -100,25 +96,8 @@ class GameMaker {
     );
   }
 
-  makeDirectionHandlers(arrows: DirectionHandlers): DirectionHandlers {
-    const updatedArrows = Object.entries(arrows).map(([direction, handler]) => {
-      if (handler === null) return [direction, handler];
-
-      const controlledHandler = () => handler();
-
-      return [direction, controlledHandler];
-    });
-
-    return Object.fromEntries(updatedArrows);
-  }
-
-  addShapeToScreen(
-    shape: Shape,
-    position: { top: number; left: number },
-    arrows: DirectionHandlers,
-  ) {
-    this.shapes[this.uniqueShapeId()] = { shape, position };
-    this.setArrows(this.makeDirectionHandlers(arrows));
+  addShapeToScreen(shape: Shape) {
+    this.shapes[this.uniqueShapeId()] = shape;
   }
 }
 
