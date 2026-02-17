@@ -1,8 +1,14 @@
 import Shape from "./shape";
-import { Screen } from "./types";
+import { Position, Screen } from "./types";
 
-class ScreenManager {
+type ShapeWithPosition = {
+  shape: Shape;
+  position: Position;
+};
+
+class GameMaker {
   private currentScreen: Screen;
+  private shapes: ShapeWithPosition[] = [];
   private arrows: {
     up: (() => Screen) | null;
     down: (() => Screen) | null;
@@ -25,7 +31,7 @@ class ScreenManager {
       ...zeros,
     ]);
 
-    return new ScreenManager(initialScreen);
+    return new GameMaker(initialScreen);
   }
 
   private setScreen(newScreen: Screen) {
@@ -40,11 +46,15 @@ class ScreenManager {
     return this.arrows;
   }
 
-  addShapeToScreen(shape: Shape, position: { top: number; left: number }) {
+  private static insertShapeInScreen(
+    shapeWithPosition: ShapeWithPosition,
+    screen: Screen,
+  ): Screen {
+    const { shape, position } = shapeWithPosition;
     const { top, left } = position;
     const { height, width, shape: shapeMatrix } = shape.getShape();
 
-    const copyScreen = [...this.currentScreen];
+    const copyScreen = [...screen];
 
     for (let index = 0; index < height; index++) {
       copyScreen[index + top] = copyScreen[index + top].toSpliced(
@@ -54,8 +64,24 @@ class ScreenManager {
       );
     }
 
-    this.setScreen(copyScreen);
+    return copyScreen;
+  }
+
+  private updateScreenWithShapes() {
+    for (const shape of this.shapes) {
+      const newScreen = GameMaker.insertShapeInScreen(
+        shape,
+        this.currentScreen,
+      );
+
+      this.setScreen(newScreen);
+    }
+  }
+
+  addShapeToScreen(shape: Shape, position: { top: number; left: number }) {
+    this.shapes.push({ shape, position });
+    this.updateScreenWithShapes();
   }
 }
 
-export default ScreenManager;
+export default GameMaker;

@@ -11,8 +11,12 @@ function App() {
     [0, 1, 0],
   ]);
 
-  screen.addShapeToScreen(cube, { top: 0, left: 0 });
-  screen.addShapeToScreen(plus, { top: 7, left: 0 });
+  const arrowControls = {
+    down: ({ top, left }, _shape) => ({ top: top + 1, left }),
+  };
+
+  screen.addShapeToScreen(cube, { top: 0, left: 0 }, arrowControls);
+  screen.addShapeToScreen(plus, { top: 1, left: 0 }, arrowControls);
 
   return (
     <div>
