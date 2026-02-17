@@ -1,6 +1,7 @@
 import Shape from "./shape";
 import { DirectionHandlers, Screen, ScreenRow } from "./types";
 
+const debug = <T>(arg: T): T => console.log(arg)! || arg;
 const uniqueId = (start: number) => () => start++;
 
 class GameMaker {
@@ -45,41 +46,58 @@ class GameMaker {
     );
   }
 
+  private static spliceWithMapping<T>(
+    start: number,
+    deleteCount: number,
+    array: T[],
+    mapper: (value: T, index: number) => T,
+  ) {
+    return array.toSpliced(
+      start,
+      deleteCount,
+      ...array.slice(start, start + deleteCount).map(mapper),
+    );
+  }
+
   private static updateScreenRow(
     screenRow: ScreenRow,
     shapeRow: ScreenRow,
     left: number,
+    shapeWidth: number,
   ): ScreenRow {
-    return screenRow.toSpliced(
-      left,
-      shapeRow.length,
-      ...screenRow
-        .slice(left, shapeRow.length)
-        .map((value, index) => shapeRow[index] && value),
+    const start = left < 0 ? 0 : left;
+    const deleteCount = left < 0 ? left + shapeWidth : shapeWidth;
+
+    const insertPixel = (value: 0 | 1, index: number) =>
+      shapeRow[left < 0 ? Math.abs(left) + index : index] && value;
+
+    return GameMaker.spliceWithMapping(
+      start,
+      deleteCount,
+      screenRow,
+      insertPixel,
     );
   }
 
   private static insertShapeInScreen(shape: Shape, screen: Screen): Screen {
-    const { height, shape: shapeMatrix, position } = shape.getShape();
+    const { height, width, shape: shapeMatrix, position } = shape.getShape();
     const { top, left } = position;
 
     const cloneScreen = screen.map((row) => row.slice());
 
     const start = top < 0 ? 0 : top;
     const deleteCount = top < 0 ? top + height : height;
+    const absIndex = (index: number) =>
+      top < 0 ? index + Math.abs(top) : index;
 
-    return cloneScreen.toSpliced(
+    const insertShapeRow = (row: (0 | 1)[], index: number): ScreenRow =>
+      GameMaker.updateScreenRow(row, shapeMatrix[absIndex(index)], left, width);
+
+    return GameMaker.spliceWithMapping(
       start,
       deleteCount,
-      ...cloneScreen
-        .slice(start, start + deleteCount)
-        .map((row, index) =>
-          GameMaker.updateScreenRow(
-            row,
-            shapeMatrix[top < 0 ? index + Math.abs(top) : index],
-            left,
-          ),
-        ),
+      cloneScreen,
+      insertShapeRow,
     );
   }
 
