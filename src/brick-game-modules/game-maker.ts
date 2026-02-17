@@ -72,7 +72,7 @@ class GameMaker {
 
     return cloneScreen.toSpliced(
       top,
-      top + height,
+      height,
       ...cloneScreen
         .slice(top, top + height)
         .map((row, index) =>
