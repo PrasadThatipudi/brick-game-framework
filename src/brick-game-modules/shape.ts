@@ -1,7 +1,8 @@
+import { Screen } from "./types";
 class Shape {
-  private shape: (0 | 1)[][];
+  private shape: Screen;
 
-  private constructor(shape: (0 | 1)[][]) {
+  private constructor(shape: Screen) {
     this.shape = shape;
   }
 
@@ -13,10 +14,14 @@ class Shape {
     };
   }
 
-  static rectangle(height: number, width: number) {
+  static rectangle(height: number, width: number): Shape {
     const ones: 1[] = Array.from({ length: width }, () => 1);
-    const shape: (0 | 1)[][] = Array.from({ length: height }, () => [...ones]);
+    const shape: Screen = Array.from({ length: height }, () => [...ones]);
 
+    return new Shape(shape);
+  }
+
+  static customShape(shape: Screen): Shape {
     return new Shape(shape);
   }
 }

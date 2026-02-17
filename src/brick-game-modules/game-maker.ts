@@ -1,4 +1,5 @@
-type Screen = (0 | 1)[][];
+import Shape from "./shape";
+import { Screen } from "./types";
 
 class ScreenManager {
   private currentScreen: Screen;
