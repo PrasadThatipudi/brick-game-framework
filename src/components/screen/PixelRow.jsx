@@ -4,7 +4,7 @@ const PixelRow = ({ row }) => {
   const pixelRow = Array.from({ length: row.length }, (_, index) => (
     <PixelBox
       key={index}
-      backgroundColor={row[index] ? "black" : "whitesmoke"}
+      backgroundColor={row[index] ? "whitesmoke" : "black"}
     />
   ));
 

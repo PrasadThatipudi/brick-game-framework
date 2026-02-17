@@ -13,9 +13,9 @@ class GameMaker {
   }
 
   static initialize(width: number, height: number) {
-    const zeros: 0[] = Array.from({ length: width }, () => 0);
+    const ones: 1[] = Array.from({ length: width }, () => 1);
     const initialScreen: Screen = Array.from({ length: height }, () => [
-      ...zeros,
+      ...ones,
     ]);
 
     return new GameMaker(initialScreen);
@@ -59,7 +59,7 @@ class GameMaker {
       shapeRow.length,
       ...screenRow
         .slice(left, shapeRow.length)
-        .map((value, index) => shapeRow[index] || value),
+        .map((value, index) => shapeRow[index] && value),
     );
   }
 

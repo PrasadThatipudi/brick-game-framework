@@ -6,9 +6,9 @@ function App() {
   const screen = GameMaker.initialize(10, 10);
   const plus = Shape.customShape(
     [
-      [0, 1, 0],
-      [1, 1, 1],
-      [0, 1, 0],
+      [1, 0, 1],
+      [0, 0, 0],
+      [1, 0, 1],
     ],
     { top: 4, left: 0 },
   );
