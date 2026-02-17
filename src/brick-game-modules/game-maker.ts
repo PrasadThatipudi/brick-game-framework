@@ -69,6 +69,8 @@ class GameMaker {
     const deleteCount = left < 0 ? left + shapeWidth : shapeWidth;
     const slicedShapeRow = shapeRow.slice(start - left);
 
+    if (slicedShapeRow.length === 0) return screenRow;
+
     const insertPixel = (value: 0 | 1, index: number) =>
       slicedShapeRow[index] && value;
 
@@ -84,6 +86,8 @@ class GameMaker {
     const start = (Math.abs(top) + top) / 2;
     const deleteCount = top < 0 ? top + height : height;
     const slicedShapeMatrix = shapeMatrix.slice(start - top);
+
+    if (slicedShapeMatrix.length === 0) return cloneScreen;
 
     const insertShapeRow = (row: (0 | 1)[], index: number): ScreenRow =>
       GameMaker.updateScreenRow(row, slicedShapeMatrix[index], left, width);
