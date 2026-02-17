@@ -21,10 +21,6 @@ class GameMaker {
     return new GameMaker(initialScreen);
   }
 
-  private setScreen(newScreen: Screen) {
-    this.initialScreen = newScreen;
-  }
-
   getArrows(): DirectionHandlers {
     const shape = this.shapes[0];
     const directionHandlers: DirectionHandlers = {
@@ -69,13 +65,20 @@ class GameMaker {
 
     const cloneScreen = screen.map((row) => row.slice());
 
+    const start = top < 0 ? 0 : top;
+    const deleteCount = top < 0 ? top + height : height;
+
     return cloneScreen.toSpliced(
-      top,
-      height,
+      start,
+      deleteCount,
       ...cloneScreen
-        .slice(top, top + height)
+        .slice(start, start + deleteCount)
         .map((row, index) =>
-          GameMaker.updateScreenRow(row, shapeMatrix[index], left),
+          GameMaker.updateScreenRow(
+            row,
+            shapeMatrix[top < 0 ? index + Math.abs(top) : index],
+            left,
+          ),
         ),
     );
   }
