@@ -1,5 +1,5 @@
 import Shape from "./shape";
-import { Position, Screen } from "./types";
+import { Position, Screen, ScreenRow } from "./types";
 
 type ShapeWithPosition = {
   shape: Shape;
@@ -46,25 +46,39 @@ class GameMaker {
     return this.arrows;
   }
 
+  private static updateScreenRow(
+    screenRow: ScreenRow,
+    shapeRow: ScreenRow,
+    left: number,
+  ): ScreenRow {
+    return screenRow.toSpliced(
+      left,
+      shapeRow.length,
+      ...screenRow
+        .slice(left, shapeRow.length)
+        .map((value, index) => shapeRow[index] || value),
+    );
+  }
+
   private static insertShapeInScreen(
     shapeWithPosition: ShapeWithPosition,
     screen: Screen,
   ): Screen {
     const { shape, position } = shapeWithPosition;
     const { top, left } = position;
-    const { height, width, shape: shapeMatrix } = shape.getShape();
+    const { height, shape: shapeMatrix } = shape.getShape();
 
-    const copyScreen = [...screen];
+    const cloneScreen = screen.map((row) => row.slice());
 
-    for (let index = 0; index < height; index++) {
-      copyScreen[index + top] = copyScreen[index + top].toSpliced(
-        left,
-        width,
-        ...shapeMatrix[index],
-      );
-    }
-
-    return copyScreen;
+    return cloneScreen.toSpliced(
+      top,
+      top + height,
+      ...cloneScreen
+        .slice(top, top + height)
+        .map((row, index) =>
+          GameMaker.updateScreenRow(row, shapeMatrix[index], left),
+        ),
+    );
   }
 
   private updateScreenWithShapes() {

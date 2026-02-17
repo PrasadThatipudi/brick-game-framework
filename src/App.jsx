@@ -15,7 +15,7 @@ function App() {
     down: ({ top, left }, _shape) => ({ top: top + 1, left }),
   };
 
-  screen.addShapeToScreen(cube, { top: 0, left: 0 }, arrowControls);
+  screen.addShapeToScreen(cube, { top: 6, left: 0 }, arrowControls);
   screen.addShapeToScreen(plus, { top: 1, left: 0 }, arrowControls);
 
   return (
