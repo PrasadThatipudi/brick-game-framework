@@ -1,5 +1,12 @@
 import Shape from "./shape";
-import { DirectionHandlers, Screen, ScreenRow } from "./types";
+import {
+  DirectionHandlers,
+  Screen,
+  ScreenRow,
+  Direction,
+  DirectionHandler,
+  ShapeUpdaterWithPosition,
+} from "./types";
 
 const debug = <T>(arg: T): T => console.log(arg)! || arg;
 const uniqueId = (start: number) => () => start++;
@@ -41,6 +48,60 @@ class GameMaker {
     this.listeners.forEach((listener) => listener(this.currentScreen));
   }
 
+  private combineShapeHandlers(
+    existingHandlers: DirectionHandlers,
+    shape: Shape,
+  ): DirectionHandlers {
+    const shapeHandlers = shape.getArrows();
+    const directions: Direction[] = ["up", "down", "left", "right"];
+
+    return directions.reduce((handlers, direction) => {
+      const shapeHandler = shapeHandlers[direction];
+
+      if (shapeHandler === null) return handlers;
+
+      const chainedHandler = this.createChainedHandler(
+        handlers[direction],
+        shapeHandler,
+      );
+
+      return { ...handlers, [direction]: chainedHandler };
+    }, existingHandlers);
+  }
+
+  private createChainedHandler(
+    previousHandler: DirectionHandler | null,
+    currentHandler: ShapeUpdaterWithPosition,
+  ): DirectionHandler {
+    return () => {
+      if (previousHandler) previousHandler();
+      currentHandler();
+
+      return this.render();
+    };
+  }
+
+  // combineShapedHandlers(directionHandlers: DirectionHandlers, shape: Shape) {
+
+  //   return Object.entries(shape.getArrows()).reduce(
+  //     (updatedDirectionHandlers, [direction, handler]): DirectionHandlers => {
+  //       if (handler === null) return updatedDirectionHandlers;
+
+  //       const newHandler = () => {
+  //         const prevHandler = updatedDirectionHandlers[direction as Direction];
+
+  //         if (prevHandler) prevHandler();
+
+  //         handler();
+  //         return this.render();
+  //       };
+
+  //       return { ...updatedDirectionHandlers, [direction]: newHandler };
+  //     },
+  //     directionHandlers,
+  //   );
+  // }
+
   getArrows(): DirectionHandlers {
     const directionHandlers: DirectionHandlers = {
       up: null,
@@ -49,21 +110,7 @@ class GameMaker {
       right: null,
     };
 
-    return this.shapes.reduce((directionHandlers, shape) => {
-      return Object.entries(shape.getArrows()).reduce(
-        (updatedDirectionHandlers, [direction, handler]): DirectionHandlers => {
-          if (handler === null) return updatedDirectionHandlers;
-
-          const newHandler = () => {
-            handler();
-            return this.render();
-          };
-
-          return { ...updatedDirectionHandlers, [direction]: newHandler };
-        },
-        directionHandlers,
-      );
-    }, directionHandlers);
+    return this.shapes.reduce(this.combineShapeHandlers, directionHandlers);
   }
 
   private static spliceMapping<T>(

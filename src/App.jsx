@@ -27,15 +27,35 @@ function App() {
       { top: 4, left: 0 },
     );
 
+    plus.onArrowUp(({ top, left }) => {
+      console.log("Here is first up function called");
+      return { top: top - 1, left };
+    });
     plus.onArrowDown(({ top, left }) => ({ top: top + 1, left }));
     plus.onArrowLeft(({ top, left }) => ({ top, left: left - 1 }));
     plus.onArrowRight(({ top, left }) => ({ top, left: left + 1 }));
 
-    plus.onMount(() => {
-      setInterval(() => {
-        plus.setPosition(({ top, left }) => ({ top: top + 1, left }));
-      }, 1000);
+    screen.addShapeToScreen(plus);
+    return () => screen.removeShape(plus);
+  }, []);
+
+  useEffect(() => {
+    const plus = Shape.customShape(
+      [
+        [1, 0, 1],
+        [0, 0, 0],
+        [1, 0, 1],
+      ],
+      { top: 7, left: 0 },
+    );
+
+    plus.onArrowUp(({ top, left }) => {
+      console.log("Here is second up function called");
+      return { top: top - 1, left };
     });
+    plus.onArrowDown(({ top, left }) => ({ top: top + 1, left }));
+    plus.onArrowLeft(({ top, left }) => ({ top, left: left - 1 }));
+    plus.onArrowRight(({ top, left }) => ({ top, left: left + 1 }));
 
     screen.addShapeToScreen(plus);
     return () => screen.removeShape(plus);
