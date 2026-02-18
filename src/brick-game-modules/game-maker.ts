@@ -81,27 +81,6 @@ class GameMaker {
     };
   }
 
-  // combineShapedHandlers(directionHandlers: DirectionHandlers, shape: Shape) {
-
-  //   return Object.entries(shape.getArrows()).reduce(
-  //     (updatedDirectionHandlers, [direction, handler]): DirectionHandlers => {
-  //       if (handler === null) return updatedDirectionHandlers;
-
-  //       const newHandler = () => {
-  //         const prevHandler = updatedDirectionHandlers[direction as Direction];
-
-  //         if (prevHandler) prevHandler();
-
-  //         handler();
-  //         return this.render();
-  //       };
-
-  //       return { ...updatedDirectionHandlers, [direction]: newHandler };
-  //     },
-  //     directionHandlers,
-  //   );
-  // }
-
   getArrows(): DirectionHandlers {
     const directionHandlers: DirectionHandlers = {
       up: null,
@@ -110,7 +89,11 @@ class GameMaker {
       right: null,
     };
 
-    return this.shapes.reduce(this.combineShapeHandlers, directionHandlers);
+    return this.shapes.reduce(
+      (combinedShapeHandlers, shape) =>
+        this.combineShapeHandlers(combinedShapeHandlers, shape),
+      directionHandlers,
+    );
   }
 
   private static spliceMapping<T>(

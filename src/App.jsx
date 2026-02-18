@@ -27,10 +27,7 @@ function App() {
       { top: 4, left: 0 },
     );
 
-    plus.onArrowUp(({ top, left }) => {
-      console.log("Here is first up function called");
-      return { top: top - 1, left };
-    });
+    plus.onArrowUp(({ top, left }) => ({ top: top - 1, left }));
     plus.onArrowDown(({ top, left }) => ({ top: top + 1, left }));
     plus.onArrowLeft(({ top, left }) => ({ top, left: left - 1 }));
     plus.onArrowRight(({ top, left }) => ({ top, left: left + 1 }));
@@ -49,10 +46,7 @@ function App() {
       { top: 7, left: 0 },
     );
 
-    plus.onArrowUp(({ top, left }) => {
-      console.log("Here is second up function called");
-      return { top: top - 1, left };
-    });
+    plus.onArrowUp(({ top, left }) => ({ top: top - 1, left }));
     plus.onArrowDown(({ top, left }) => ({ top: top + 1, left }));
     plus.onArrowLeft(({ top, left }) => ({ top, left: left - 1 }));
     plus.onArrowRight(({ top, left }) => ({ top, left: left + 1 }));
