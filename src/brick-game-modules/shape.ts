@@ -5,23 +5,33 @@ import {
   ShapeDirectionHandlers,
   ShapeUpdaterWithPosition,
 } from "./types";
+
+const debug = <T>(arg: T): T => console.log(arg)! || arg;
 class Shape {
   private shape: Screen;
   private position: Position;
+  private onChangeCallback: (() => void) | null = null;
   private arrows: ShapeDirectionHandlers = {
     up: null,
     down: null,
     left: null,
     right: null,
   };
+  onMountHandler: (() => void) | null = null;
 
   private constructor(shape: Screen, position: Position) {
     this.shape = shape;
     this.position = position;
   }
 
-  private setPosition(position: Position) {
-    this.position = position;
+  setPosition(positionSetter: ((p: Position) => Position) | Position) {
+    if (typeof positionSetter === "function") {
+      this.position = positionSetter(this.position);
+    } else {
+      this.position = positionSetter;
+    }
+
+    if (this.onChangeCallback) this.onChangeCallback();
   }
 
   private createDirectionHandler(
@@ -63,6 +73,10 @@ class Shape {
     return this.arrows;
   }
 
+  setOnChange(onChangeCallback: () => void) {
+    this.onChangeCallback = onChangeCallback;
+  }
+
   static rectangle(height: number, width: number, position: Position): Shape {
     const ones: 1[] = Array.from({ length: width }, () => 1);
     const shape: Screen = Array.from({ length: height }, () => [...ones]);
@@ -72,6 +86,10 @@ class Shape {
 
   static customShape(shape: Screen, position: Position): Shape {
     return new Shape(shape, position);
+  }
+
+  onMount(onMountHandler: () => void) {
+    this.onMountHandler = onMountHandler;
   }
 }
 

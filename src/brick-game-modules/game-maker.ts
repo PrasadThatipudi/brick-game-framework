@@ -6,11 +6,14 @@ const uniqueId = (start: number) => () => start++;
 
 class GameMaker {
   private initialScreen: Screen;
-  private shapes: { [N in number]: Shape } = {};
+  private currentScreen: Screen;
+  private listeners: Array<(screen: Screen) => void> = [];
+  private shapes: Shape[] = [];
   private uniqueShapeId = uniqueId(0);
 
   private constructor(initialScreen: Screen) {
     this.initialScreen = initialScreen;
+    this.currentScreen = initialScreen;
   }
 
   static initialize(width: number, height: number) {
@@ -22,8 +25,23 @@ class GameMaker {
     return new GameMaker(initialScreen);
   }
 
+  getCurrentScreen() {
+    return this.currentScreen.slice().map((row) => row.slice());
+  }
+
+  subscribe(listener: (screen: Screen) => void) {
+    this.listeners.push(listener);
+
+    return () => {
+      this.listeners = this.listeners.filter((l) => l !== listener);
+    };
+  }
+
+  private notifyListeners() {
+    this.listeners.forEach((listener) => listener(this.currentScreen));
+  }
+
   getArrows(): DirectionHandlers {
-    const shape = this.shapes[0];
     const directionHandlers: DirectionHandlers = {
       up: null,
       down: null,
@@ -31,19 +49,21 @@ class GameMaker {
       right: null,
     };
 
-    return Object.entries(shape.getArrows()).reduce(
-      (directionHandlers, [direction, handler]): DirectionHandlers => {
-        if (handler === null) return directionHandlers;
+    return this.shapes.reduce((directionHandlers, shape) => {
+      return Object.entries(shape.getArrows()).reduce(
+        (updatedDirectionHandlers, [direction, handler]): DirectionHandlers => {
+          if (handler === null) return updatedDirectionHandlers;
 
-        const newHandler = () => {
-          handler();
-          return this.render();
-        };
+          const newHandler = () => {
+            handler();
+            return this.render();
+          };
 
-        return { ...directionHandlers, [direction]: newHandler };
-      },
-      directionHandlers,
-    );
+          return { ...updatedDirectionHandlers, [direction]: newHandler };
+        },
+        directionHandlers,
+      );
+    }, directionHandlers);
   }
 
   private static spliceMapping<T>(
@@ -101,14 +121,31 @@ class GameMaker {
   }
 
   render() {
-    return Object.values(this.shapes).reduce(
+    this.currentScreen = Object.values(this.shapes).reduce(
       (newScreen, shape) => GameMaker.insertShapeInScreen(shape, newScreen),
       this.initialScreen,
     );
+
+    this.notifyListeners();
+
+    return this.currentScreen;
+  }
+
+  removeShape(targetShape: Shape) {
+    this.shapes = this.shapes.filter((shape) => targetShape !== shape);
   }
 
   addShapeToScreen(shape: Shape) {
     this.shapes[this.uniqueShapeId()] = shape;
+
+    const onChangeCallback = () => {
+      this.render();
+    };
+
+    this.render();
+
+    shape.setOnChange(onChangeCallback.bind(this));
+    if (shape.onMountHandler) shape.onMountHandler();
   }
 }
 
