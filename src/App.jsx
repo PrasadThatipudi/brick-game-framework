@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useShape } from "./hooks";
 import BrickGame from "./BrickGame";
 import GameMaker from "./brick-game-modules/game-maker";
 import Shape from "./brick-game-modules/shape";
@@ -17,14 +18,25 @@ function App() {
     return unsubscribe;
   }, []);
 
-  useEffect(() => {
+  useShape(screen, () => {
+    const cube = Shape.rectangle(2, 2, { top: 0, left: 0 });
+
+    cube.onArrowUp(({ top, left }) => ({ top: top - 1, left }));
+    cube.onArrowDown(({ top, left }) => ({ top: top + 1, left }));
+    cube.onArrowLeft(({ top, left }) => ({ top, left: left - 1 }));
+    cube.onArrowRight(({ top, left }) => ({ top, left: left + 1 }));
+
+    return cube;
+  });
+
+  useShape(screen, () => {
     const plus = Shape.customShape(
       [
         [1, 0, 1],
         [0, 0, 0],
         [1, 0, 1],
       ],
-      { top: 4, left: 0 },
+      { top: 2, left: 0 },
     );
 
     plus.onArrowUp(({ top, left }) => ({ top: top - 1, left }));
@@ -32,28 +44,8 @@ function App() {
     plus.onArrowLeft(({ top, left }) => ({ top, left: left - 1 }));
     plus.onArrowRight(({ top, left }) => ({ top, left: left + 1 }));
 
-    screen.addShapeToScreen(plus);
-    return () => screen.removeShape(plus);
-  }, []);
-
-  useEffect(() => {
-    const plus = Shape.customShape(
-      [
-        [1, 0, 1],
-        [0, 0, 0],
-        [1, 0, 1],
-      ],
-      { top: 7, left: 0 },
-    );
-
-    plus.onArrowUp(({ top, left }) => ({ top: top - 1, left }));
-    plus.onArrowDown(({ top, left }) => ({ top: top + 1, left }));
-    plus.onArrowLeft(({ top, left }) => ({ top, left: left - 1 }));
-    plus.onArrowRight(({ top, left }) => ({ top, left: left + 1 }));
-
-    screen.addShapeToScreen(plus);
-    return () => screen.removeShape(plus);
-  }, []);
+    return plus;
+  });
 
   useEffect(() => {
     const arrows = screen.getArrows();

@@ -78,8 +78,8 @@ class Shape {
   }
 
   static rectangle(height: number, width: number, position: Position): Shape {
-    const ones: 1[] = Array.from({ length: width }, () => 1);
-    const shape: Screen = Array.from({ length: height }, () => [...ones]);
+    const zeros: 0[] = Array.from({ length: width }, () => 0);
+    const shape: Screen = Array.from({ length: height }, () => [...zeros]);
 
     return new Shape(shape, position);
   }
