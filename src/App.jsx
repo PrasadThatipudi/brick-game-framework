@@ -29,23 +29,23 @@ function App() {
     return cube;
   });
 
-  useShape(screen, () => {
-    const plus = Shape.customShape(
-      [
-        [1, 0, 1],
-        [0, 0, 0],
-        [1, 0, 1],
-      ],
-      { top: 2, left: 0 },
-    );
+  // useShape(screen, () => {
+  //   const plus = Shape.customShape(
+  //     [
+  //       [1, 0, 1],
+  //       [0, 0, 0],
+  //       [1, 0, 1],
+  //     ],
+  //     { top: 2, left: 0 },
+  //   );
 
-    plus.onArrowUp(({ top, left }) => ({ top: top - 1, left }));
-    plus.onArrowDown(({ top, left }) => ({ top: top + 1, left }));
-    plus.onArrowLeft(({ top, left }) => ({ top, left: left - 1 }));
-    plus.onArrowRight(({ top, left }) => ({ top, left: left + 1 }));
+  //   plus.onArrowUp(({ top, left }) => ({ top: top - 1, left }));
+  //   plus.onArrowDown(({ top, left }) => ({ top: top + 1, left }));
+  //   plus.onArrowLeft(({ top, left }) => ({ top, left: left - 1 }));
+  //   plus.onArrowRight(({ top, left }) => ({ top, left: left + 1 }));
 
-    return plus;
-  });
+  //   return plus;
+  // });
 
   useEffect(() => {
     const arrows = screen.getArrows();

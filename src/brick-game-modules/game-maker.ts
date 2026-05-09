@@ -16,11 +16,22 @@ class GameMaker {
   private currentScreen: Screen;
   private listeners: Array<(screen: Screen) => void> = [];
   private shapes: Shape[] = [];
+  private screenSize: { height: number; width: number };
+  private disabledShapeSides: { [key in Direction]: boolean } = {
+    up: false,
+    down: false,
+    left: false,
+    right: false,
+  };
   private uniqueShapeId = uniqueId(0);
 
   private constructor(initialScreen: Screen) {
     this.initialScreen = initialScreen;
     this.currentScreen = initialScreen;
+    this.screenSize = {
+      height: initialScreen.length,
+      width: initialScreen[0].length,
+    };
   }
 
   static initialize(width: number, height: number) {
@@ -48,6 +59,53 @@ class GameMaker {
     this.listeners.forEach((listener) => listener(this.currentScreen));
   }
 
+  private createBoundaryValidatingHandler(
+    direction: Direction,
+    shapeHandler: ShapeUpdaterWithPosition,
+    shape: Shape,
+    previousHandler: DirectionHandler | null,
+  ): DirectionHandler {
+    return () => {
+      if (!this.disabledShapeSides[direction]) {
+        if (previousHandler) previousHandler();
+        shapeHandler();
+        return this.render();
+      }
+
+      if (this.wouldViolateBoundary(shape, direction)) {
+        return this.currentScreen;
+      }
+
+      if (previousHandler) previousHandler();
+      shapeHandler();
+
+      return this.render();
+    };
+  }
+
+  private wouldViolateBoundary(shape: Shape, direction: string) {
+    const currentShape = shape.getShape();
+    const { height, width, position } = currentShape;
+
+    if (direction === "up" && position.top <= 0) {
+      return true;
+    } else if (
+      direction === "down" &&
+      position.top >= this.screenSize.height - height
+    ) {
+      return true;
+    } else if (direction === "left" && position.left <= 0) {
+      return true;
+    } else if (
+      direction === "right" &&
+      position.left >= this.screenSize.width - width
+    ) {
+      return true;
+    }
+
+    return false;
+  }
+
   private combineShapeHandlers(
     existingHandlers: DirectionHandlers,
     shape: Shape,
@@ -60,25 +118,15 @@ class GameMaker {
 
       if (shapeHandler === null) return handlers;
 
-      const chainedHandler = this.createChainedHandler(
-        handlers[direction],
+      const chainedHandler = this.createBoundaryValidatingHandler(
+        direction,
         shapeHandler,
+        shape,
+        handlers[direction],
       );
 
       return { ...handlers, [direction]: chainedHandler };
     }, existingHandlers);
-  }
-
-  private createChainedHandler(
-    previousHandler: DirectionHandler | null,
-    currentHandler: ShapeUpdaterWithPosition,
-  ): DirectionHandler {
-    return () => {
-      if (previousHandler) previousHandler();
-      currentHandler();
-
-      return this.render();
-    };
   }
 
   getArrows(): DirectionHandlers {

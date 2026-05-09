@@ -5,6 +5,7 @@ type Screen = ScreenRow[];
 type Position = { top: number; left: number };
 type Direction = "up" | "down" | "left" | "right";
 type DirectionHandler = () => Screen;
+type Dimension = { height: number; width: number };
 
 type DirectionHandlers = {
   [D in Direction]: DirectionHandler | null;
@@ -33,4 +34,5 @@ export type {
   PositionUpdater,
   ShapeUpdaterWithPosition,
   ShapeDirectionHandlers,
+  Dimension,
 };
