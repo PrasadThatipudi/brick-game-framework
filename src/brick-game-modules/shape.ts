@@ -63,8 +63,7 @@ class Shape {
   getShape() {
     return {
       shape: this.shape,
-      height: this.shape.length,
-      width: this.shape[0].length,
+      dimension: { height: this.shape.length, width: this.shape[0].length },
       position: this.position,
     };
   }

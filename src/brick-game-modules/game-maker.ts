@@ -85,17 +85,17 @@ class GameMaker {
 
   private wouldViolateBoundary(shape: Shape, direction: Direction) {
     const currentShape = shape.getShape();
-    const { height, width, position } = currentShape;
+    const { dimension, position } = currentShape;
 
     switch (direction) {
-      case "up":
+      case Direction.UP:
         return position.top <= 0;
-      case "down":
-        return position.top >= this.screenSize.height - height;
-      case "left":
+      case Direction.DOWN:
+        return position.top >= this.screenSize.height - dimension.height;
+      case Direction.LEFT:
         return position.left <= 0;
-      case "right":
-        return position.left >= this.screenSize.width - width;
+      case Direction.RIGHT:
+        return position.left >= this.screenSize.width - dimension.width;
       default:
         return false;
     }
@@ -119,14 +119,14 @@ class GameMaker {
 
       if (!shapeHandler) return handlers;
 
-      const directionHanlder = this.createBoundaryValidatingHandler(
+      const directionHandler = this.createBoundaryValidatingHandler(
         direction,
         shapeHandler,
         shape,
         handlers[direction],
       );
 
-      return { ...handlers, [direction]: directionHanlder };
+      return { ...handlers, [direction]: directionHandler };
     }, existingHandlers);
   }
 
@@ -177,7 +177,11 @@ class GameMaker {
   }
 
   private static insertShapeInScreen(shape: Shape, screen: Screen): Screen {
-    const { height, width, shape: shapeMatrix, position } = shape.getShape();
+    const {
+      dimension: { height, width },
+      shape: shapeMatrix,
+      position,
+    } = shape.getShape();
     const { top, left } = position;
 
     const cloneScreen = screen.map((row) => row.slice());
