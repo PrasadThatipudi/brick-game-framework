@@ -3,7 +3,13 @@ import Shape from "./shape";
 type ScreenRow = (0 | 1)[];
 type Screen = ScreenRow[];
 type Position = { top: number; left: number };
-type Direction = "up" | "down" | "left" | "right";
+export enum Direction {
+  UP = "up",
+  DOWN = "down",
+  LEFT = "left",
+  RIGHT = "right",
+}
+
 type DirectionHandler = () => Screen;
 type Dimension = { height: number; width: number };
 
@@ -28,7 +34,6 @@ export type {
   Position,
   ScreenRow,
   DirectionHandlers,
-  Direction,
   DirectionHandler,
   ShapeWithPosition,
   PositionUpdater,

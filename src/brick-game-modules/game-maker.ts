@@ -83,27 +83,22 @@ class GameMaker {
     };
   }
 
-  private wouldViolateBoundary(shape: Shape, direction: string) {
+  private wouldViolateBoundary(shape: Shape, direction: Direction) {
     const currentShape = shape.getShape();
     const { height, width, position } = currentShape;
 
-    if (direction === "up" && position.top <= 0) {
-      return true;
-    } else if (
-      direction === "down" &&
-      position.top >= this.screenSize.height - height
-    ) {
-      return true;
-    } else if (direction === "left" && position.left <= 0) {
-      return true;
-    } else if (
-      direction === "right" &&
-      position.left >= this.screenSize.width - width
-    ) {
-      return true;
+    switch (direction) {
+      case "up":
+        return position.top <= 0;
+      case "down":
+        return position.top >= this.screenSize.height - height;
+      case "left":
+        return position.left <= 0;
+      case "right":
+        return position.left >= this.screenSize.width - width;
+      default:
+        return false;
     }
-
-    return false;
   }
 
   private combineShapeHandlers(
@@ -111,21 +106,27 @@ class GameMaker {
     shape: Shape,
   ): DirectionHandlers {
     const shapeHandlers = shape.getArrows();
-    const directions: Direction[] = ["up", "down", "left", "right"];
+
+    const directions = [
+      Direction.UP,
+      Direction.DOWN,
+      Direction.LEFT,
+      Direction.RIGHT,
+    ];
 
     return directions.reduce((handlers, direction) => {
       const shapeHandler = shapeHandlers[direction];
 
-      if (shapeHandler === null) return handlers;
+      if (!shapeHandler) return handlers;
 
-      const chainedHandler = this.createBoundaryValidatingHandler(
+      const directionHanlder = this.createBoundaryValidatingHandler(
         direction,
         shapeHandler,
         shape,
         handlers[direction],
       );
 
-      return { ...handlers, [direction]: chainedHandler };
+      return { ...handlers, [direction]: directionHanlder };
     }, existingHandlers);
   }
 
